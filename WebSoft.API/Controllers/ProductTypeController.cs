@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebSoft.API.DbHelper;
+using WebSoft.API.Models.Domain;
 using WebSoft.API.Models.Dto;
 
 namespace WebSoft.API.Controllers
@@ -59,6 +60,32 @@ namespace WebSoft.API.Controllers
             };
 
             return Ok(productTypeDto);
+        }
+
+        //POST to create new product type
+        //POST http://localhost:8012/producttype/create
+
+        [HttpPost]
+        public IActionResult Create([FromBody] DtoProductTypeAdd productTypeAdd)
+        {
+            // Map Dto to Domain model
+            var productTypeDomain = new ProductTypeModels
+            {
+                Name = productTypeAdd.Name,
+            };
+
+            //Use Domain maodel to create
+            context.ProductTypes.Add(productTypeDomain);
+            context.SaveChanges();
+
+            //Map domain model back to dto
+            var productType = new ProductTypeModels
+            {
+                Id = productTypeDomain.Id,
+                Name = productTypeDomain.Name,
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = productTypeDomain.Id }, productType);
         }
     }
 }
