@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebSoft.API.DbHelper;
+using WebSoft.API.Repositories.Interface;
+using WebSoft.API.Repositories.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<WebDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("conString")));
+
+builder.Services.AddScoped<IProductType, SProductType>();
 
 var app = builder.Build();
 

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using WebSoft.API.DbHelper;
 using WebSoft.API.Models.Domain;
 using WebSoft.API.Models.Dto;
+using WebSoft.API.Repositories.Interface;
 
 namespace WebSoft.API.Controllers
 {
@@ -12,18 +13,20 @@ namespace WebSoft.API.Controllers
     public class ProductTypeController : ControllerBase
     {
         private readonly WebDbContext context;
-        public ProductTypeController(WebDbContext _context)
+        private readonly IProductType _productType;
+        public ProductTypeController(WebDbContext _context, IProductType productType)
         {
             context = _context;
+            _productType = productType;
         }
 
         //Get All Product Types
         //GET: http://localhost:port/ProductType
         [HttpGet]
-        public async Task<IActionResult> GetAll() {
-
+        public async Task<IActionResult> GetAll()
+        {
             //Get all data from domain
-            var productTypes = await context.ProductTypes.ToListAsync();
+            var productTypes = await _productType.GetAllAsync();
 
             //maping data from products to dto
             var productTypesDto = new List<DtoProductType>();
@@ -43,7 +46,8 @@ namespace WebSoft.API.Controllers
         //GET: http://localhost:port/ProductType/{id}
         [HttpGet]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> GetById(Guid id) {
+        public async Task<IActionResult> GetById(Guid id)
+        {
 
             //Get single data from domain
             var productType = await context.ProductTypes.FirstOrDefaultAsync(z => z.Id == id);
@@ -93,11 +97,11 @@ namespace WebSoft.API.Controllers
         //PUT: http://localhost:7104/producttype/{id}
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody]DtoProductTypeAdd dtoProductTypeUpdate)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] DtoProductTypeAdd dtoProductTypeUpdate)
         {
             //Check if Exist
-            var producttypedomain =await context.ProductTypes.FirstOrDefaultAsync( z => z.Id == id);
-            if(producttypedomain == null)
+            var producttypedomain = await context.ProductTypes.FirstOrDefaultAsync(z => z.Id == id);
+            if (producttypedomain == null)
             {
                 return NotFound();
             }
@@ -127,7 +131,7 @@ namespace WebSoft.API.Controllers
             //Return data from server by domain model
             var productTypedomain = await context.ProductTypes.FirstOrDefaultAsync(z => z.Id == id);
 
-            if(productTypedomain == null)
+            if (productTypedomain == null)
             {
                 return NotFound();
             }
