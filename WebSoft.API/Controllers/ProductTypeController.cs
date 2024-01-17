@@ -48,9 +48,8 @@ namespace WebSoft.API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-
             //Get single data from domain
-            var productType = await context.ProductTypes.FirstOrDefaultAsync(z => z.Id == id);
+            var productType = await _productType.GetByIdAsync(id);
             //var productType = context.ProductTypes.Find(id); 
             if (productType == null)
             {
@@ -80,8 +79,7 @@ namespace WebSoft.API.Controllers
             };
 
             //Use Domain maodel to create
-            await context.ProductTypes.AddAsync(productTypeDomain);
-            await context.SaveChangesAsync();
+            await _productType.CreateAsync(productTypeDomain);
 
             //Map domain model back to dto
             var productType = new ProductTypeModels
@@ -99,18 +97,18 @@ namespace WebSoft.API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] DtoProductTypeAdd dtoProductTypeUpdate)
         {
+            // Map Dto to Doman
+            var producttypedomain = new ProductTypeModels
+            {
+                Name = dtoProductTypeUpdate.Name,
+            };
+
             //Check if Exist
-            var producttypedomain = await context.ProductTypes.FirstOrDefaultAsync(z => z.Id == id);
+            producttypedomain = await _productType.UpdateAsync(id, producttypedomain);
             if (producttypedomain == null)
             {
                 return NotFound();
             }
-
-            //Map dto to domain
-            producttypedomain.Name = dtoProductTypeUpdate.Name;
-
-            //Update query
-            await context.SaveChangesAsync();
 
             //Map domain model to dto
             var producttypedto = new DtoProductType
@@ -129,16 +127,12 @@ namespace WebSoft.API.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             //Return data from server by domain model
-            var productTypedomain = await context.ProductTypes.FirstOrDefaultAsync(z => z.Id == id);
+            var productTypedomain = await _productType.GetByIdAsync(id);
 
             if (productTypedomain == null)
             {
                 return NotFound();
             }
-
-            //delete product type
-            context.ProductTypes.Remove(productTypedomain);
-            await context.SaveChangesAsync();
 
             //return delete region back
             //map domain model to dto
