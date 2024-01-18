@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebSoft.API.DbHelper;
+using WebSoft.API.Mapping;
 using WebSoft.API.Models.Domain;
 using WebSoft.API.Models.Dto;
 using WebSoft.API.Repositories.Interface;
@@ -14,10 +14,13 @@ namespace WebSoft.API.Controllers
     {
         private readonly WebDbContext context;
         private readonly IProductType _productType;
-        public ProductTypeController(WebDbContext _context, IProductType productType)
+        private readonly IMapper mapper;
+
+        public ProductTypeController(WebDbContext _context, IProductType productType, IMapper mapper)
         {
             context = _context;
             _productType = productType;
+            this.mapper = mapper;
         }
 
         //Get All Product Types
@@ -29,15 +32,17 @@ namespace WebSoft.API.Controllers
             var productTypes = await _productType.GetAllAsync();
 
             //maping data from products to dto
-            var productTypesDto = new List<DtoProductType>();
-            foreach (var productType in productTypes)
-            {
-                productTypesDto.Add(new DtoProductType()
-                {
-                    Id = productType.Id,
-                    Name = productType.Name,
-                });
-            }
+            ////var productTypesDto = new List<DtoProductType>();
+            ////foreach (var productType in productTypes)
+            ////{
+            ////    productTypesDto.Add(new DtoProductType()
+            ////    {
+            ////        Id = productType.Id,
+            ////        Name = productType.Name,
+            ////    });
+            ////}
+
+            var productTypesDto = mapper.Map<List<DtoProductType>>(productTypes);
 
             //Return Dtos
             return Ok(productTypesDto);
@@ -127,7 +132,7 @@ namespace WebSoft.API.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             //Return data from server by domain model
-            var productTypedomain = await _productType.GetByIdAsync(id);
+            var productTypedomain = await _productType.DeleteAsync(id);
 
             if (productTypedomain == null)
             {
