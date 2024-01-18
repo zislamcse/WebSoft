@@ -9,6 +9,7 @@ namespace WebSoft.API.Mapping
         public AutoMapperProfile()
         {
             CreateMap<DtoProductType, ProductTypeModels>().ReverseMap();
+            CreateMap<DtoProductTypeAdd, ProductTypeModels>().ReverseMap();
         }
     }
 }

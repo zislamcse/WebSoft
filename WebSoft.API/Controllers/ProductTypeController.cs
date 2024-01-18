@@ -62,11 +62,7 @@ namespace WebSoft.API.Controllers
             }
 
             //maping data from domain to dto
-            var productTypeDto = new DtoProductType
-            {
-                Id = productType.Id,
-                Name = productType.Name,
-            };
+            var productTypeDto = mapper.Map<DtoProductType>(productType);
 
             return Ok(productTypeDto);
         }
@@ -78,20 +74,13 @@ namespace WebSoft.API.Controllers
         public async Task<IActionResult> Create([FromBody] DtoProductTypeAdd productTypeAdd)
         {
             // Map Dto to Domain model
-            var productTypeDomain = new ProductTypeModels
-            {
-                Name = productTypeAdd.Name,
-            };
+            var productTypeDomain = mapper.Map<ProductTypeModels>(productTypeAdd);
 
             //Use Domain maodel to create
             await _productType.CreateAsync(productTypeDomain);
 
             //Map domain model back to dto
-            var productType = new ProductTypeModels
-            {
-                Id = productTypeDomain.Id,
-                Name = productTypeDomain.Name,
-            };
+            var productType = mapper.Map<DtoProductType>(productTypeDomain);
 
             return CreatedAtAction(nameof(GetById), new { id = productTypeDomain.Id }, productType);
         }
@@ -103,10 +92,7 @@ namespace WebSoft.API.Controllers
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] DtoProductTypeAdd dtoProductTypeUpdate)
         {
             // Map Dto to Doman
-            var producttypedomain = new ProductTypeModels
-            {
-                Name = dtoProductTypeUpdate.Name,
-            };
+            var producttypedomain = mapper.Map<ProductTypeModels>(dtoProductTypeUpdate);
 
             //Check if Exist
             producttypedomain = await _productType.UpdateAsync(id, producttypedomain);
@@ -116,11 +102,7 @@ namespace WebSoft.API.Controllers
             }
 
             //Map domain model to dto
-            var producttypedto = new DtoProductType
-            {
-                Id = producttypedomain.Id,
-                Name = dtoProductTypeUpdate.Name,
-            };
+            var producttypedto = mapper.Map<DtoProductType>(producttypedomain);
 
             return Ok(producttypedto);
         }
@@ -141,11 +123,7 @@ namespace WebSoft.API.Controllers
 
             //return delete region back
             //map domain model to dto
-            var regiondto = new DtoProductType
-            {
-                Id = productTypedomain.Id,
-                Name = productTypedomain.Name,
-            };
+            var regiondto = mapper.Map<DtoProductType>(productTypedomain);
 
             return Ok(regiondto);
         }
